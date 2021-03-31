@@ -1,0 +1,35 @@
+# Endpoints from which collections are captured.
+endpoints:
+  examples/segment-source:
+    # Near-realtime S3 file drop into which segmentation events are delivered.
+    s3:
+      bucket: demo-segment-events
+
+# Captures bind a data source endpoint to an ingested collection.
+captures:
+  # Watch S3 file drop for new rides.
+  - endpoint: { name: examples/segment-source }
+    target: { name: examples/segment/events }
+
+collections:
+  # Segmentation events, each representing an add or remove of a user to a segment.
+  examples/segment/events:
+    schema: schemas/event.schema.yaml
+    key: [/event]
+    projections:
+      vendor:
+        location: /segment/vendor
+        partition: true
+
+      # Project for natural querying (without needing to quote 'segment/name').
+      segment_name: /segment/name
+      user_id: /user
+
+# Journal rules fine-tune how Flow configures Gazette journals.
+journalRules:
+  00_fragment_store:
+    template:
+      fragment:
+        compression_codec: GZIP
+        stores: [file:///]
+        flush_interval: 5m

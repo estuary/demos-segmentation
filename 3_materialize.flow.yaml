@@ -1,0 +1,46 @@
+import:
+  - 2_derive.flow.yaml
+
+# Endpoint(s) into which collections are materialized.
+endpoints:
+  demo/target/database:
+    postgres:
+      host: localhost
+      port: 5432
+      user: flow
+      password: flow
+      dbname: flow
+
+  demo/target/webhook:
+    # Run `node demo-webhook-api.js` before materializing to this endpoint.
+    webhook:
+      endpoint: http://localhost:9000
+
+# Materializations bind a collection to a destination endpoint.
+materializations:
+  - endpoint:
+      name: demo/target/database
+      config: { table: segment_memberships }
+    source:
+      name: examples/segment/memberships
+
+  - endpoint:
+      name: demo/target/database
+      config: { table: segment_profiles }
+    source:
+      name: examples/segment/profiles
+    fields:
+      include:
+        segments: {}
+      recommended: true
+
+  - endpoint:
+      name: demo/target/webhook
+    source:
+      name: examples/segment/toggles
+  #
+  # Uncomment me to materialize Webhook calls from profiles.
+  #- endpoint:
+  #    name: examples/webhook-api
+  #  source:
+  #    name: examples/segment/profiles

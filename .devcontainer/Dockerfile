@@ -4,14 +4,16 @@ FROM quay.io/estuary/flow:dev
 USER root
 RUN apt-get update -y \
     && apt-get install --no-install-recommends -y \
-      postgresql-client \
-      sqlite3 \
-      pv \
-      jq \
-      sudo \
       git \
+      golang \
+      jq \
+      postgresql-client \
+      procps \
+      pv \
+      sqlite3 \
+      sudo \
     && rm -rf /var/lib/apt/lists/*
-  
+
 RUN curl -L -o /usr/bin/websocat https://github.com/vi/websocat/releases/download/v1.6.0/websocat_amd64-linux \
 		&& echo "cec0d7d05252dcadb09a5afb8851cf9f3a8997bba44334eee5f7db70ca72aa0b /usr/bin/websocat" | sha256sum -c - \
 		&& chmod +x /usr/bin/websocat \
