@@ -16,11 +16,15 @@ which may provide a more friendly introduction as this repository is designed wi
 
 ## Narrator Script
 
-`1_captures.flow.yaml`: Characterizes upstream data system(s) and collection into which segment events are captured.
+Environment:
+  - Repo is github.com/estuary/segment-demo
+  - Run with [VSCode Remote Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+  - This integrates `flowctl` tool with a vanilla PostgreSQL database, used for materializations.
 
-`schemas/event.schema.yaml`: JSON schema for a segmentation event.
-
-`3_materialize.flow.yaml`: Defines endpoint(s) and materializations.
+Sources to examine:
+  - `1_captures.flow.yaml`: Characterizes upstream data system(s) and collection into which segment events are captured.
+  - `schemas/event.schema.yaml`: JSON schema for a segmentation event.
+  - `3_materialize.flow.yaml`: Defines endpoint(s) and materializations.
 
 Start Flow:
 ```console
