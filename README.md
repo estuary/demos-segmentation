@@ -72,7 +72,7 @@ More load:
   - Stop event stream; notice "toggles" is all caught up.
 
 Run tests:
- - `flowctl test --source examples/segment/flow.yaml`
+ - `flowctl test --source 4_tests.flow.yaml`
 
 Cleanup:
  - `git clean -f -d` to remove `flowctl_develop` directory.

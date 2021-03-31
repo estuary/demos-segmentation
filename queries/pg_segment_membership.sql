@@ -5,6 +5,6 @@ SELECT vendor,
     first::TIMESTAMP,
     last::TIMESTAMP
 FROM segment_memberships
-WHERE vendor = 6
+WHERE vendor = 6 AND segment_name = 'seg-113'
     AND member
 ORDER BY segment_name;
