@@ -1,17 +1,27 @@
 name: CI
-on: [push, pull_request]
+
+# Controls when the action will run. Triggers the workflow on push
+# or pull request events, but only for the primary branch.
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: Test catalog
-        uses: ./.github/actions/flowctl
-        with:
-          source: hello-world.flow.yaml
 
-      - name: Poll catalog
+      - name: Run the tests
         uses: ./.github/actions/flowctl
         with:
-          command: develop --poll
-          source: hello-world.flow.yaml
+          command: test
+          source: 4_tests.flow.yaml
+
+      - name: Test the catalog
+        uses: ./.github/actions/flowctl
+        with:
+          command: test
+          source: 2_derive.flow.yaml
