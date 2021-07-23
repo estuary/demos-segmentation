@@ -10,6 +10,7 @@ RUN apt-get update -y \
       jq \
       sudo \
       git \
+      golang \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -L -o /usr/bin/websocat https://github.com/vi/websocat/releases/download/v1.6.0/websocat_amd64-linux \
