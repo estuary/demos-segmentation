@@ -2,6 +2,7 @@ version: "3"
 
 services:
   flow:
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile
@@ -26,6 +27,7 @@ services:
     network_mode: host
 
   db:
+    platform: linux/amd64
     image: postgres:latest
     restart: unless-stopped
     volumes:
