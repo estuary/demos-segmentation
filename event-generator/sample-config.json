@@ -1,0 +1,5 @@
+{
+  "maxEventsPerSecond": 10,
+  "segmentCardinality": 10000,
+  "userCardinality": 1000000
+}

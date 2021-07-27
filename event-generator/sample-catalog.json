@@ -1,0 +1,58 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "segmentation-events",
+        "json_schema": {
+          "type": "object",
+          "properties": {
+            "event": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string"
+            },
+            "user": {
+              "type": "string"
+            },
+            "segment": {
+              "type": "object",
+              "properties": {
+                "vendor": {
+                  "type": "number"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            },
+            "remove": {
+              "type": [
+                "boolean",
+                null
+              ]
+            }
+          },
+          "required": [
+            "event",
+            "timestamp",
+            "user",
+            "segment"
+          ]
+        },
+        "supported_sync_modes": [
+          "incremental",
+          "full_refresh"
+        ],
+        "source_defined_cursor": true,
+        "source_defined_primary_key": [
+          [
+            "event"
+          ]
+        ]
+      },
+      "sync_mode": "incremental"
+    }
+  ],
+  "estuary.dev/tail": true
+}
