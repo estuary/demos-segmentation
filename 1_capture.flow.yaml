@@ -1,16 +1,3 @@
-# Endpoints from which collections are captured.
-endpoints:
-  examples/segment-source:
-    # Near-realtime S3 file drop into which segmentation events are delivered.
-    s3:
-      bucket: demo-segment-events
-
-# Captures bind a data source endpoint to an ingested collection.
-captures:
-  # Watch S3 file drop for new rides.
-  - endpoint: { name: examples/segment-source }
-    target: { name: examples/segment/events }
-
 collections:
   # Segmentation events, each representing an add or remove of a user to a segment.
   examples/segment/events:
