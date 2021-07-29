@@ -2,7 +2,7 @@ captures:
   examples/segment/event-generator:
     endpoint:
       airbyteSource:
-        image: ghcr.io/estuary/demos-segmentation-event-generator:ad05fa1
+        image: ghcr.io/estuary/demos-segmentation/event-generator:107ebda
         config:
           maxEventsPerSecond: 1000
           # Maximum number of Events produced per second
