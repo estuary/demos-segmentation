@@ -1,5 +1,7 @@
 FROM debian:buster-slim
 
+LABEL org.opencontainers.image.source=https://github.com/estuary/demos-segmentation
+
 RUN apt-get update -y \
  && apt-get install --no-install-recommends -y \
       ca-certificates \

@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := docker_build
 
 registry = ghcr.io/estuary
-image_name = demos-segmentation-event-generator
+image_name = demos-segmentation/event-generator
 version = $(shell git describe --always --dirty --tags)
 
 .PHONY: docker_build
