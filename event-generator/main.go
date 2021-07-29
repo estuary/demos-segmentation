@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/estuary/connectors/go-types/airbyte"
-	"github.com/estuary/demos-segmentation/event-generator/throttle"
+	"golang.org/x/time/rate"
 )
 
 type connectorConfig struct {
@@ -154,7 +155,8 @@ func doRead(args airbyte.ReadCmd) error {
 
 func buildEventProducer(enc *json.Encoder, config connectorConfig) func(*connectorState) error {
 	var source eventSource = newEventSource(config.SegmentCardinality, config.UserCardinality)
-	var throttler throttle.Throttler = throttle.PerSecond(config.MaxEventsPerSecond)
+	var throttler *rate.Limiter = rate.NewLimiter(rate.Limit(config.MaxEventsPerSecond), 1)
+	var ctx context.Context = context.Background()
 
 	return func(state *connectorState) error {
 		var event Event = source.next()
@@ -165,17 +167,17 @@ func buildEventProducer(enc *json.Encoder, config connectorConfig) func(*connect
 
 		state.AdvanceCursor()
 
-		throttler.WaitUntilReady()
+		throttler.Wait(ctx)
 
 		return nil
 	}
 }
 
 func buildCheckpointer(enc *json.Encoder) func(*connectorState) error {
-	var throttler throttle.Throttler = throttle.New(200 * time.Millisecond)
+	var throttler *rate.Limiter = rate.NewLimiter(rate.Every(200*time.Millisecond), 1)
 
 	return func(latestState *connectorState) error {
-		if throttler.IsReady() {
+		if throttler.Allow() {
 			return writeStateCheckpoint(enc, latestState)
 		} else {
 			return nil
