@@ -4,15 +4,15 @@ captures:
       airbyteSource:
         image: ghcr.io/estuary/demos-segmentation-event-generator:ad05fa1
         config:
-          maxEventsPerSecond: 5
+          maxEventsPerSecond: 1000
           # Maximum number of Events produced per second
           # [integer] (required)
 
-          segmentCardinality: 100
+          segmentCardinality: 500
           # Number of unique segments to use when generating events
           # [integer] (required)
 
-          userCardinality: 100
+          userCardinality: 10000
           # Number of unique users to use when generating events
           # [integer] (required)
     bindings:

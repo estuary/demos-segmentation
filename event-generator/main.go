@@ -12,7 +12,7 @@ import (
 
 type Config struct {
 	MaxEventsPerSecond int64  `json:"maxEventsPerSecond"`
-	SegmentCardinality uint64 `json:"SegmentCardinality"`
+	SegmentCardinality uint64 `json:"segmentCardinality"`
 	UserCardinality    uint64 `json:"userCardinality"`
 }
 
@@ -38,23 +38,23 @@ const configSchema = `{
 		"userCardinality"
 	],
 	"properties": {
+		"maxEventsPerSecond": {
+			"type":        "integer",
+			"title":       "Number of Events per Second",
+			"description": "Maximum number of Events produced per second",
+			"default":     "1000"
+		},
 		"segmentCardinality": {
 			"type":        "integer",
 			"title":       "Number of Segments",
 			"description": "Number of unique segments to use when generating events",
-			"default":     "10000"
+			"default":     "1000"
 		},
 		"userCardinality": {
 			"type":        "integer",
 			"title":       "Number of Users",
 			"description": "Number of unique users to use when generating events",
-			"default":     "1000000"
-		}
-		"maxEventsPerSecond": {
-			"type":        "integer",
-			"title":       "Number of Events per Second",
-			"description": "Maximum number of Events produced per second",
-			"default":     "10"
+			"default":     "10000"
 		}
 	}
 }`
