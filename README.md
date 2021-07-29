@@ -22,7 +22,6 @@ This demo is expected to be run with [VSCode Remote Containers](https://marketpl
 - Flow Runtime: This executes the **captures**, the **derivations**, and **materializations** defined in the `.flow.yaml` files.
 - `flowctl`: The CLI tool for interacting with Flow.
 - PostgreSQL: A vanilla database used for materializations.
-- Go: Used for procedurally generating the demo data.
 - Node: Used for running a webhook server for materializations.
 
 ## Getting Started
@@ -75,15 +74,6 @@ node scripts/demo-webhook-api.js
 ```
 This Node service will simply print the webhooks it receives to stdout so we can easily inspect the data being materialized to this endpoint.
 
-### Terminal 3: Data Generation
-
-Now we are ready to begin sending data to Flow. We'll use a small script to simulate an external service sending webhooks to Flow.
-
-```console
-./scripts/stream-events.sh
-```
-
-This script generates random segmentation events and sends them to the port exposed by `flow-ingester`. Data will be continually fed to Flow for as long as this script is running and can be stopped/restarted any time.
 
 ## Observations:
 
@@ -215,10 +205,10 @@ This script generates random segmentation events and sends them to the port expo
     - When decreased, Flow makes more frequent, smaller calls.
 
 2. Increased Load:
-    - Try increasing `rate-limit` parameter in `stream-events.sh` from 1K => 10K
-        - Requires a reasonably beefy PC (8 cores or so).
+    - Try increasing `maxEventsPerSecond` parameter in `1_capture.flow.yaml`.
     - Watch how "toggles" calls are much bigger.
-    - Stop event stream => notice "toggles" is all caught up.
+    - Try increasing `segmentCardinality` parameter in `1_capture.flow.yaml`.
+    - Watch how "toggles" calls are less frequent.
 
 ## Also See
 

@@ -1,3 +1,26 @@
+captures:
+  examples/segment/event-generator:
+    endpoint:
+      airbyteSource:
+        image: ghcr.io/estuary/demos-segmentation/event-generator:107ebda
+        config:
+          maxEventsPerSecond: 1000
+          # Maximum number of Events produced per second
+          # [integer] (required)
+
+          segmentCardinality: 500
+          # Number of unique segments to use when generating events
+          # [integer] (required)
+
+          userCardinality: 10000
+          # Number of unique users to use when generating events
+          # [integer] (required)
+    bindings:
+      - resource:
+          stream: segmentation-events
+          syncMode: incremental
+        target: examples/segment/events
+
 collections:
   # Segmentation events, each representing an add or remove of a user to a segment.
   examples/segment/events:
@@ -11,12 +34,3 @@ collections:
       # Project for natural querying (without needing to quote 'segment/name').
       segment_name: /segment/name
       user_id: /user
-
-# Journal rules fine-tune how Flow configures Gazette journals.
-journalRules:
-  00_fragment_store:
-    template:
-      fragment:
-        compression_codec: GZIP
-        stores: [file:///]
-        flush_interval: 5m
