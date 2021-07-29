@@ -10,13 +10,13 @@ import (
 	"github.com/estuary/demos-segmentation/event-generator/throttle"
 )
 
-type Config struct {
+type connectorConfig struct {
 	MaxEventsPerSecond int64  `json:"maxEventsPerSecond"`
 	SegmentCardinality uint64 `json:"segmentCardinality"`
 	UserCardinality    uint64 `json:"userCardinality"`
 }
 
-func (c *Config) Validate() error {
+func (c *connectorConfig) Validate() error {
 	if c.MaxEventsPerSecond <= 0 {
 		c.MaxEventsPerSecond = 1
 	}
@@ -86,7 +86,7 @@ func doCheck(args airbyte.CheckCmd) error {
 		Status: airbyte.StatusSucceeded,
 	}
 
-	if err := args.ConfigFile.Parse(new(Config)); err != nil {
+	if err := args.ConfigFile.Parse(new(connectorConfig)); err != nil {
 		result.Status = airbyte.StatusFailed
 		result.Message = err.Error()
 	}
@@ -98,7 +98,7 @@ func doCheck(args airbyte.CheckCmd) error {
 }
 
 func doDiscover(args airbyte.DiscoverCmd) error {
-	if err := args.ConfigFile.Parse(new(Config)); err != nil {
+	if err := args.ConfigFile.Parse(new(connectorConfig)); err != nil {
 		return err
 	}
 
@@ -120,7 +120,7 @@ func doDiscover(args airbyte.DiscoverCmd) error {
 }
 
 func doRead(args airbyte.ReadCmd) error {
-	var config Config
+	var config connectorConfig
 	var state connectorState
 	var catalog airbyte.ConfiguredCatalog
 
