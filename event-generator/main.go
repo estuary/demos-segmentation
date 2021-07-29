@@ -59,12 +59,16 @@ const configSchema = `{
 	}
 }`
 
-type State struct {
+type connectorState struct {
 	Cursor int `json:"cursor"`
 }
 
-func (c *State) Validate() error {
+func (s *connectorState) Validate() error {
 	return nil
+}
+
+func (s *connectorState) AdvanceCursor() {
+	s.Cursor++
 }
 
 func main() {
@@ -117,7 +121,7 @@ func doDiscover(args airbyte.DiscoverCmd) error {
 
 func doRead(args airbyte.ReadCmd) error {
 	var config Config
-	var state State
+	var state connectorState
 	var catalog airbyte.ConfiguredCatalog
 
 	if err := args.ConfigFile.Parse(&config); err != nil {
@@ -131,8 +135,8 @@ func doRead(args airbyte.ReadCmd) error {
 	}
 
 	var enc *json.Encoder = airbyte.NewStdoutEncoder()
-	var produceEvent func(*State) error = buildEventProducer(enc, events.NewSource(config.SegmentCardinality, config.UserCardinality))
-	var checkpoint func(*State) error = buildCheckpointer(enc)
+	var produceEvent func(*connectorState) error = buildEventProducer(enc, events.NewSource(config.SegmentCardinality, config.UserCardinality))
+	var checkpoint func(*connectorState) error = buildCheckpointer(enc)
 	var throttler throttle.Throttler = throttle.PerSecond(config.MaxEventsPerSecond)
 
 	for {
@@ -152,26 +156,26 @@ func doRead(args airbyte.ReadCmd) error {
 	}
 }
 
-func buildEventProducer(enc *json.Encoder, eventSource events.Source) func(*State) error {
+func buildEventProducer(enc *json.Encoder, eventSource events.Source) func(*connectorState) error {
 	var event events.Event
 
-	return func(state *State) error {
+	return func(state *connectorState) error {
 		event = eventSource.Next()
 
 		if err := writeEvent(enc, event); err != nil {
 			return err
 		}
 
-		state.Cursor++
+		state.AdvanceCursor()
 
 		return nil
 	}
 }
 
-func buildCheckpointer(enc *json.Encoder) func(*State) error {
+func buildCheckpointer(enc *json.Encoder) func(*connectorState) error {
 	var throttler throttle.Throttler = throttle.New(200 * time.Millisecond)
 
-	return func(latestState *State) error {
+	return func(latestState *connectorState) error {
 		if throttler.IsReady() {
 			return writeStateCheckpoint(enc, latestState)
 		} else {
@@ -200,7 +204,7 @@ func writeEvent(enc *json.Encoder, event events.Event) error {
 	return nil
 }
 
-func writeStateCheckpoint(enc *json.Encoder, state *State) error {
+func writeStateCheckpoint(enc *json.Encoder, state *connectorState) error {
 	if jsonBody, err := json.Marshal(state); err != nil {
 		return err
 	} else if err = enc.Encode(airbyte.Message{
