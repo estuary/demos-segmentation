@@ -120,9 +120,11 @@ func doDiscover(args airbyte.DiscoverCmd) error {
 }
 
 func doRead(args airbyte.ReadCmd) error {
-	var config connectorConfig
-	var state connectorState
-	var catalog airbyte.ConfiguredCatalog
+	var (
+		config  connectorConfig
+		state   connectorState
+		catalog airbyte.ConfiguredCatalog
+	)
 
 	if err := args.ConfigFile.Parse(&config); err != nil {
 		return err
@@ -134,9 +136,11 @@ func doRead(args airbyte.ReadCmd) error {
 		}
 	}
 
-	var enc *json.Encoder = airbyte.NewStdoutEncoder()
-	var produceEvent func(*connectorState) error = buildEventProducer(enc, config)
-	var checkpoint func(*connectorState) error = buildCheckpointer(enc)
+	var (
+		enc          *json.Encoder               = airbyte.NewStdoutEncoder()
+		produceEvent func(*connectorState) error = buildEventProducer(enc, config)
+		checkpoint   func(*connectorState) error = buildCheckpointer(enc)
+	)
 
 	for {
 		if err := produceEvent(&state); err != nil {
@@ -154,9 +158,11 @@ func doRead(args airbyte.ReadCmd) error {
 }
 
 func buildEventProducer(enc *json.Encoder, config connectorConfig) func(*connectorState) error {
-	var source eventSource = newEventSource(config.SegmentCardinality, config.UserCardinality)
-	var throttler *rate.Limiter = rate.NewLimiter(rate.Limit(config.MaxEventsPerSecond), 1)
-	var ctx context.Context = context.Background()
+	var (
+		source    eventSource     = newEventSource(config.SegmentCardinality, config.UserCardinality)
+		throttler *rate.Limiter   = rate.NewLimiter(rate.Limit(config.MaxEventsPerSecond), 1)
+		ctx       context.Context = context.Background()
+	)
 
 	return func(state *connectorState) error {
 		var event Event = source.next()
