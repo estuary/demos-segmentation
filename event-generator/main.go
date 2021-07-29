@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/estuary/connectors/go-types/airbyte"
-	"github.com/estuary/demos-segmentation/event-generator/events"
 	"github.com/estuary/demos-segmentation/event-generator/throttle"
 )
 
@@ -105,7 +104,7 @@ func doDiscover(args airbyte.DiscoverCmd) error {
 	var catalog = new(airbyte.Catalog)
 	catalog.Streams = append(catalog.Streams, airbyte.Stream{
 		Name:                    "segmentation-events",
-		JSONSchema:              json.RawMessage(events.Schema),
+		JSONSchema:              json.RawMessage(eventSchema),
 		SupportedSyncModes:      airbyte.AllSyncModes,
 		SourceDefinedCursor:     true,
 		SourceDefinedPrimaryKey: [][]string{{"event"}},
@@ -135,7 +134,7 @@ func doRead(args airbyte.ReadCmd) error {
 	}
 
 	var enc *json.Encoder = airbyte.NewStdoutEncoder()
-	var produceEvent func(*connectorState) error = buildEventProducer(enc, events.NewSource(config.SegmentCardinality, config.UserCardinality))
+	var produceEvent func(*connectorState) error = buildEventProducer(enc, newEventSource(config.SegmentCardinality, config.UserCardinality))
 	var checkpoint func(*connectorState) error = buildCheckpointer(enc)
 	var throttler throttle.Throttler = throttle.PerSecond(config.MaxEventsPerSecond)
 
@@ -156,11 +155,11 @@ func doRead(args airbyte.ReadCmd) error {
 	}
 }
 
-func buildEventProducer(enc *json.Encoder, eventSource events.Source) func(*connectorState) error {
-	var event events.Event
+func buildEventProducer(enc *json.Encoder, source eventSource) func(*connectorState) error {
+	var event Event
 
 	return func(state *connectorState) error {
-		event = eventSource.Next()
+		event = source.next()
 
 		if err := writeEvent(enc, event); err != nil {
 			return err
@@ -184,7 +183,7 @@ func buildCheckpointer(enc *json.Encoder) func(*connectorState) error {
 	}
 }
 
-func writeEvent(enc *json.Encoder, event events.Event) error {
+func writeEvent(enc *json.Encoder, event Event) error {
 	var jsonBody, err = json.Marshal(event)
 	if err != nil {
 		return err

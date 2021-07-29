@@ -1,4 +1,4 @@
-package events
+package main
 
 import (
 	"encoding/hex"
@@ -44,7 +44,7 @@ type Event struct {
 	Remove    bool    `json:"remove,omitempty"`
 }
 
-const Schema = `
+const eventSchema = `
 {
   "type": "object",
   "properties": {
@@ -68,7 +68,7 @@ type sample struct {
 	add           bool
 }
 
-type Source struct {
+type eventSource struct {
 	rnd             *rand.Rand
 	rndSegment      *rand.Zipf
 	reservoir       []sample
@@ -79,10 +79,10 @@ type Source struct {
 	tickCh *time.Ticker
 }
 
-func NewSource(segmentCardinality uint64, userCardinality uint64) Source {
+func newEventSource(segmentCardinality uint64, userCardinality uint64) eventSource {
 	var rnd = rand.New(rand.NewSource(8675309))
 
-	return Source{
+	return eventSource{
 		rnd:             rnd,
 		rndSegment:      rand.NewZipf(rnd, segmentSkew, 1, segmentCardinality),
 		reservoir:       make([]sample, 0, repetitionReservoirSize),
@@ -92,7 +92,7 @@ func NewSource(segmentCardinality uint64, userCardinality uint64) Source {
 	}
 }
 
-func (gen *Source) Next() Event {
+func (gen *eventSource) next() Event {
 	var cur sample
 
 	if len(gen.reservoir) == 0 || gen.rnd.Float32() > repeatProability {
