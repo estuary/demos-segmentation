@@ -134,9 +134,8 @@ func doRead(args airbyte.ReadCmd) error {
 	}
 
 	var enc *json.Encoder = airbyte.NewStdoutEncoder()
-	var produceEvent func(*connectorState) error = buildEventProducer(enc, newEventSource(config.SegmentCardinality, config.UserCardinality))
+	var produceEvent func(*connectorState) error = buildEventProducer(enc, config)
 	var checkpoint func(*connectorState) error = buildCheckpointer(enc)
-	var throttler throttle.Throttler = throttle.PerSecond(config.MaxEventsPerSecond)
 
 	for {
 		if err := produceEvent(&state); err != nil {
@@ -150,22 +149,23 @@ func doRead(args airbyte.ReadCmd) error {
 		if !catalog.Tail {
 			return nil
 		}
-
-		throttler.WaitUntilReady()
 	}
 }
 
-func buildEventProducer(enc *json.Encoder, source eventSource) func(*connectorState) error {
-	var event Event
+func buildEventProducer(enc *json.Encoder, config connectorConfig) func(*connectorState) error {
+	var source eventSource = newEventSource(config.SegmentCardinality, config.UserCardinality)
+	var throttler throttle.Throttler = throttle.PerSecond(config.MaxEventsPerSecond)
 
 	return func(state *connectorState) error {
-		event = source.next()
+		var event Event = source.next()
 
 		if err := writeEvent(enc, event); err != nil {
 			return err
 		}
 
 		state.AdvanceCursor()
+
+		throttler.WaitUntilReady()
 
 		return nil
 	}
