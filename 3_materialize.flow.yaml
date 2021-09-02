@@ -21,7 +21,7 @@ materializations:
         port: 5432
         user: flow
         password: flow
-        dbname: flow
+        database: flow
 
   # Run `node demo-webhook-api.js` before materializing to this endpoint.
   demo/target/webhook:

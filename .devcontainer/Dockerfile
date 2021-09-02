@@ -1,4 +1,4 @@
-FROM quay.io/estuary/flow:v0.1.0-375-g19aff5c
+FROM ghcr.io/estuary/flow:v0.1.0-404-ge8da2ce
 
 # Switch to the root user to install packages and setup sudo access
 USER root
