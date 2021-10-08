@@ -22,15 +22,6 @@ captures:
         target: examples/segment/events
 
 collections:
-  # Segmentation events, each representing an add or remove of a user to a segment.
   examples/segment/events:
     schema: schemas/event.schema.yaml
     key: [/event]
-    projections:
-      vendor:
-        location: /segment/vendor
-        partition: true
-
-      # Project for natural querying (without needing to quote 'segment/name').
-      segment_name: /segment/name
-      user_id: /user

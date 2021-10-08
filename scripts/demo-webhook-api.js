@@ -1,6 +1,6 @@
 var http = require('http');
 
-const delay = 500; // Delay to model network latency and API back-pressure.
+const delay = 50; // Delay to model network latency and API back-pressure.
 const port = 9000; // Port we'll listen on.
 
 http.createServer(function (request, response) {

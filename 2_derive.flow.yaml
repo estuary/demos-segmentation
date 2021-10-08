@@ -34,9 +34,7 @@ collections:
     key: [/segment/vendor, /segment/name, /user]
 
     projections:
-      vendor:
-        location: /segment/vendor
-        partition: true
+      vendor: /segment/vendor
       segment_name: /segment/name
       user_id: /user
 
@@ -65,14 +63,6 @@ collections:
     key: [/event]
 
     projections:
-      vendor:
-        location: /segment/vendor
-        partition: true
-
-      # Additional projections for more natural querying without identifer quotes.
-      segment_name: /segment/name
-      previous_event: /previous/event
-      previous_remove: /previous/remove
       user_id: /user
 
     derivation:

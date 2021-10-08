@@ -1,7 +1,20 @@
 # Flow User Segmentation Demo
 
 A common problem in the marketing domain is user segmentation. Many companies
-maintain segments of their users to better understand behavior and address cohorts. A company may have many segmentation events coming in continuously, each of which represents an add or remove of a user to a segment.
+maintain segments of their users to better understand behavior and address cohorts. A company may have many segmentation events coming in continuously, each of which represents an add or remove of a user to a segment:
+
+```json
+{
+  "event": "2779df04-151c-cd62-b0e1-205a82afd7a7",
+  "remove": true,
+  "segment": {
+    "name": "seg-7",
+    "vendor": 8
+  },
+  "timestamp": "2021-10-08T02:36:21Z",
+  "user": "usr-000477"
+}
+```
 
 These granular events must be transformed into current understandings of:
 

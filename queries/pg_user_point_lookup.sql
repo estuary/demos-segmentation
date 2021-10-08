@@ -7,4 +7,4 @@ SELECT user_id,
     (arr->>'last')::TIMESTAMP AS last_update
 FROM segment_profiles,
     json_array_elements(segments) as arr
-WHERE user_id = 'usr-000fce';
+WHERE user_id = 'usr-0007db';

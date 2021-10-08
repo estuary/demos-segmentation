@@ -3,7 +3,16 @@ import:
 
 # Materializations bind a collection to a destination endpoint.
 materializations:
-  demo/target/database:
+  examples/segment/tables:
+    endpoint:
+      flowSink:
+        image: ghcr.io/estuary/materialize-postgres:7af5397
+        config:
+          host: localhost
+          port: 5432
+          user: flow
+          password: flow
+          database: flow
     bindings:
       - source: examples/segment/memberships
         resource:
@@ -15,22 +24,15 @@ materializations:
           include:
             segments: {}
           recommended: true
-    endpoint:
-      postgres:
-        host: localhost
-        port: 5432
-        user: flow
-        password: flow
-        database: flow
 
   # Run `node demo-webhook-api.js` before materializing to this endpoint.
-  demo/target/webhook:
-    bindings:
-      - source: examples/segment/toggles
-        resource: {}
-      # Uncomment me to materialize Webhook calls from profiles.
-      # - source: examples/segment/profiles
-      #   resource: {}
-    endpoint:
-      webhook:
-        address: http://localhost:9000/
+  #examples/segment/profile-hooks:
+  #  endpoint:
+  #    flowSink:
+  #      image: ghcr.io/estuary/materialize-webhook:7af5397
+  #      config:
+  #        address: http://localhost:9000/
+  #
+  #  bindings:
+  #    - source: examples/segment/profiles
+  #      resource: { relativePath: /profiles }
