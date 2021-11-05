@@ -80,7 +80,7 @@ type eventSource struct {
 }
 
 func newEventSource(segmentCardinality uint64, userCardinality uint64) eventSource {
-	var rnd = rand.New(rand.NewSource(8675309))
+	var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	return eventSource{
 		rnd:             rnd,
