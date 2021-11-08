@@ -2,11 +2,15 @@ captures:
   examples/segment/event-generator:
     endpoint:
       airbyteSource:
-        image: ghcr.io/estuary/demos-segmentation/event-generator:107ebda
+        image: ghcr.io/estuary/demos-segmentation/event-generator:9f980f9
         config:
           maxEventsPerSecond: 1000
           # Maximum number of Events produced per second
-          # [integer] (required)
+          # [integer]
+
+          seed: 8675309
+          # Random Number Generator Seed Value
+          # [integer]
 
           segmentCardinality: 500
           # Number of unique segments to use when generating events

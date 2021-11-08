@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/estuary/connectors/go-types/airbyte"
@@ -12,6 +13,7 @@ import (
 
 type connectorConfig struct {
 	MaxEventsPerSecond int64  `json:"maxEventsPerSecond"`
+	Seed               int64  `json:"seed,omitempty"`
 	SegmentCardinality uint64 `json:"segmentCardinality"`
 	UserCardinality    uint64 `json:"userCardinality"`
 }
@@ -29,6 +31,16 @@ func (c *connectorConfig) Validate() error {
 	return nil
 }
 
+func (c *connectorConfig) Rng() *rand.Rand {
+	var seed int64
+	if c.Seed == 0 {
+		seed = time.Now().UnixNano()
+	} else {
+		seed = c.Seed
+	}
+	return rand.New(rand.NewSource(seed))
+}
+
 const configSchema = `{
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"title":   "Segmentation Generator Source Spec",
@@ -43,6 +55,11 @@ const configSchema = `{
 			"title":       "Number of Events per Second",
 			"description": "Maximum number of Events produced per second",
 			"default":     "1000"
+		},
+		"seed": {
+			"type":        "integer",
+			"title":       "Random Number Generator Seed Value",
+			"description": "Seeds the random number generator with a single static value that does not change between restarts. When blank, a psuedorandom seed will be used."
 		},
 		"segmentCardinality": {
 			"type":        "integer",
@@ -159,7 +176,7 @@ func doRead(args airbyte.ReadCmd) error {
 
 func buildEventProducer(enc *json.Encoder, config connectorConfig) func(*connectorState) error {
 	var (
-		source    eventSource     = newEventSource(config.SegmentCardinality, config.UserCardinality)
+		source    eventSource     = newEventSource(config.Rng(), config.SegmentCardinality, config.UserCardinality)
 		throttler *rate.Limiter   = rate.NewLimiter(rate.Limit(config.MaxEventsPerSecond), 1)
 		ctx       context.Context = context.Background()
 	)
