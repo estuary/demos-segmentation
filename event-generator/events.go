@@ -79,9 +79,7 @@ type eventSource struct {
 	tickCh *time.Ticker
 }
 
-func newEventSource(segmentCardinality uint64, userCardinality uint64) eventSource {
-	var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
-
+func newEventSource(rnd *rand.Rand, segmentCardinality uint64, userCardinality uint64) eventSource {
 	return eventSource{
 		rnd:             rnd,
 		rndSegment:      rand.NewZipf(rnd, segmentSkew, 1, segmentCardinality),
